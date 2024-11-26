@@ -3,12 +3,15 @@ import './App.css';
 import VideoCard from './components/VideoCard';
 import BottomNavbar from './components/BottomNavbar';
 import TopNavbar from './components/TopNavbar';
+import VideoNavigation from './components/VideoNavigation'
+import FooterRight from './components/FooterRight';
+
 
 // This array holds information about different videos
 const videoUrls = [
   {
     url: require('./videos/video1.mp4'),
-    profilePic: 'https://p16-sign-useast2a.tiktokcdn.com/tos-useast2a-avt-0068-giso/9d429ac49d6d18de6ebd2a3fb1f39269~c5_100x100.jpeg?x-expires=1688479200&x-signature=pjH5pwSS8Sg1dJqbB1GdCLXH6ew%3D',
+    profilePic: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg',
     username: 'csjackie',
     description: 'Lol nvm #compsci #chatgpt #ai #openai #techtok',
     song: 'Original sound - Famed Flames',
@@ -52,9 +55,19 @@ const videoUrls = [
   },
 ];
 
-function App() {
+function App() 
+{
   const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const videoRefs = useRef([]);
+  const nextVideo = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videos.length); // Wrap around to the first video when the end is reached
+  };
+
+  // Handle previous video
+  const prevVideo = () => {
+    setCurrentVideoIndex((prevIndex) => (prevIndex - 1 + videos.length) % videos.length); // Wrap around to the last video when at the beginning
+  };
 
   useEffect(() => {
     setVideos(videoUrls);
@@ -116,11 +129,27 @@ function App() {
             url={video.url}
             profilePic={video.profilePic}
             setVideoRef={handleVideoRef(index)}
-            autoplay={index === 0}
+            autoplay={index === currentVideoIndex}
           />
         ))}
         <BottomNavbar className="bottom-navbar" />
       </div>
+      <div>
+      <VideoNavigation nextVideo={nextVideo} prevVideo={prevVideo} />
+      </div>
+      <div>
+      <FooterRight
+       likes={videos.likes}
+       comments={videos.comments}
+       saves={videos.saves}
+       shares={videos.shares}
+       profilePic={videos.profilePic}
+       videoUrl={videos.url}  
+       videoRef={videoRefs.current[currentVideoIndex]}
+       />
+      </div>
+
+
     </div>
   );
   
